@@ -9,17 +9,18 @@ if TYPE_CHECKING:
 
 from pathlib import Path
 
-import easyqc.qt
 import numpy as np
 import pandas as pd
 import pyqtgraph as pg
 import scipy.signal
 import spikeglx
-from easyqc.gui import EasyQC
 from ibldsp import voltage
 from iblutil.numerical import ismember
 from neuropixel import trace_header
 from qtpy import QtCore, QtGui, QtWidgets, uic
+
+from viewephys.viewer.gui import EasyQC
+from viewephys.viewer.qt import create_app
 
 T_SCALAR = 1  # defaults s for user side
 A_SCALAR = 1e6  # defaults V for user side
@@ -206,7 +207,7 @@ class EphysBinViewer(QtWidgets.QMainWindow):
                 a_scalar=A_SCALAR,
             )
 
-    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+    def closeEvent(self, event: QtGui.QCloseEvent | None) -> None:
         """
         Close EphysBinViewer, ensuring all subwindows are cleared.
 
@@ -318,7 +319,8 @@ class EphysViewer(EasyQC):
         self.header_curves = {}
         # menus handling
         # menu pick
-        self.menupick = self.menuBar().addMenu("&Pick")
+        self.menupick = self.menubar.addMenu("&Pick")
+        assert self.menupick is not None
         self.action_pick = QtWidgets.QAction("Pick", self)
         self.action_pick.setCheckable(True)
         self.menupick.addAction(self.action_pick)
@@ -393,7 +395,9 @@ class EphysViewer(EasyQC):
             )
             self.keyPressed.disconnect(self.on_key_picking_mode)
 
-    def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
+    def keyPressEvent(self, event: QtGui.QKeyEvent | None) -> None:
+        if event is None:
+            return
         super().keyPressEvent(event)
         self.keyPressed.emit(event.key())
 
@@ -414,11 +418,11 @@ class EphysViewer(EasyQC):
         - space increments the group number
         """
 
-        if event.buttons() == QtCore.Qt.RightButton:
+        if event.buttons() == QtCore.Qt.MouseButton.RightButton:
             self.ctrl.model.pickspikes.pick_group += (
                 1  # TODO check logic of incrementing here
             )
-        if event.buttons() != QtCore.Qt.LeftButton:
+        if event.buttons() != QtCore.Qt.MouseButton.LeftButton:
             return
         TR_RANGE = 3
         S_RANGE = int(0.5 / self.ctrl.model.si)
@@ -435,7 +439,7 @@ class EphysViewer(EasyQC):
                 tmax = None
 
             # --- Add a spike
-            case QtCore.Qt.ControlModifier:
+            case QtCore.Qt.KeyboardModifier.ControlModifier:
                 # the control modifier prevents wrapping
                 # around the nearby maximal voltage
                 tmax, xmax = (int(round(s)), int(round(tr)))
@@ -513,7 +517,7 @@ def viewephys(
     :return:
     """
 
-    easyqc.qt.create_app()
+    create_app()
     ev = EphysViewer._get_or_create(title=title)
 
     if channels is None:
