@@ -67,8 +67,16 @@ class EphysBinViewer(QtWidgets.QMainWindow):
         self.horizontalSlider.setMinimum(0)
         self.horizontalSlider.setSingleStep(1)
         self.horizontalSlider.setTickInterval(10)
+        self._first_sample = 0
         self.horizontalSlider.sliderReleased.connect(self.on_horizontalSliderReleased)
         self.horizontalSlider.valueChanged.connect(self.on_horizontalSliderValueChanged)
+        validator = QtGui.QDoubleValidator(0.0, 1e12, 6, self.lineEdit_jumpTime)
+        validator.setNotation(QtGui.QDoubleValidator.StandardNotation)
+        # To handle dot as decimal separator regardless of user locale
+        validator.setLocale(QtCore.QLocale.c())
+        self.lineEdit_jumpTime.setValidator(validator)
+        self.lineEdit_jumpTime.returnPressed.connect(self.on_jumpToTimeRequested)
+        self.pushButton_jumpTime.clicked.connect(self.on_jumpToTimeRequested)
         self.label_smin.setText("0")
         self.show()
 
@@ -135,32 +143,79 @@ class EphysBinViewer(QtWidgets.QMainWindow):
         )
         self.label.setText(tlabel)
         self.horizontalSlider.setValue(0)
+        self._first_sample = 0
         self.horizontalSlider.setEnabled(True)
+        self.lineEdit_jumpTime.setEnabled(True)
+        self.pushButton_jumpTime.setEnabled(True)
         self.on_horizontalSliderReleased()
 
     def on_horizontalSliderValueChanged(self) -> None:
-        tcur = self.horizontalSlider.value() * NSAMP_CHUNK / self.sr.fs
-        self.label_sval.setText(f"{tcur:0.2f}s")
+        self._first_sample = int(self.horizontalSlider.value()) * NSAMP_CHUNK
+        self._update_time_label()
 
-    def on_horizontalSliderReleased(self) -> None:
+    def _update_time_label(self) -> None:
+        tcur = self._first_sample / self.sr.fs
+        self.label_sval.setText(f"{tcur:0.6f}s")
+
+    def on_jumpToTimeRequested(self) -> None:
+        """Jump to the user-typed time, centering the loaded window on it.
+
+        The slider thumb is moved to the nearest chunk for visual feedback only.
+        """
+        text = self.lineEdit_jumpTime.text().strip()
+        if text == "" or not hasattr(self, "sr"):
+            return
+        try:
+            t = float(text)
+        except ValueError:
+            return
+        requested_sample = int(round(t * self.sr.fs))
+        requested_sample = max(0, min(requested_sample, int(self.sr.ns) - 1))
+        max_first = max(0, int(self.sr.ns) - NSAMP_CHUNK)
+        first_sample = requested_sample - NSAMP_CHUNK // 2
+        first_sample = max(0, min(first_sample, max_first))
+        center_time = requested_sample / self.sr.fs
+        self._first_sample = first_sample
+        slider_value = int(round(first_sample / NSAMP_CHUNK))
+        slider_value = max(0, min(slider_value, self.horizontalSlider.maximum()))
+        # Move slider for visual feedback without letting valueChanged
+        # overwrite the exact first_sample we just set.
+        self.horizontalSlider.blockSignals(True)
+        self.horizontalSlider.setValue(slider_value)
+        self.horizontalSlider.blockSignals(False)
+        self._update_time_label()
+        self.on_horizontalSliderReleased(center_time=center_time)
+
+    def on_horizontalSliderReleased(  # noqa: C901
+        self, center_time: float | None = None
+    ) -> None:
         """
         Open EphysViewer windows at the selected timepoint
         for the selected preprocessing steps.
 
-        The horizontal slider allows the user to select the timepoint
-        at which they would like to see the data. This will open EphysVeiewer
-        windows at a window starting at that time point.
+        The horizontal slider opens EphysViewer windows starting at the
+        selected timepoint. Jump requests may pass ``center_time`` so existing
+        viewer zoom is preserved around the requested absolute time.
 
         Depending on the selected preprocessing steps, open a number of
         viewers (one for each selected preprocessing step) to display the
         preprocessed data at the selected timepoint.
         """
-        first = int(float(self.horizontalSlider.value()) * NSAMP_CHUNK)
+        # Capture current zoom per visible viewer so we can restore it after the reload.
+        prev_ranges: dict[str, tuple[list[float], list[float]] | None] = {}
+        for k, ev in self.viewers.items():
+            if ev is not None and ev.isVisible():
+                xr, yr = ev.viewBox_seismic.viewRange()
+                prev_ranges[k] = (list(xr), list(yr))
+            else:
+                prev_ranges[k] = None
+
+        first = int(self._first_sample)
         last = first + int(NSAMP_CHUNK)
         raw = self.sr[first:last, : self.sr.nc - self.sr.nsync].T
 
         # get parameters for both AP and LFP band
-        t0 = first / self.sr.fs * 0
+        t0 = first / self.sr.fs
         if self.sr.type == "lf":
             butter_kwargs = {"N": 3, "Wn": 3 / self.sr.fs * 2, "btype": "highpass"}
             fcn_destripe = voltage.destripe_lfp
@@ -197,7 +252,7 @@ class EphysBinViewer(QtWidgets.QMainWindow):
                     sos = scipy.signal.butter(**butter_kwargs, output="sos")
                     data = scipy.signal.sosfiltfilt(sos, raw)
 
-            self.viewers[k] = viewephys(
+            viewer = viewephys(
                 data,
                 self.sr.fs,
                 channels=self.sr.geometry,
@@ -206,6 +261,25 @@ class EphysBinViewer(QtWidgets.QMainWindow):
                 t_scalar=T_SCALAR,
                 a_scalar=A_SCALAR,
             )
+            self.viewers[k] = viewer
+            prev = prev_ranges.get(k)
+            if prev is not None:
+                xr_prev, yr_prev = prev
+                width = xr_prev[1] - xr_prev[0]
+                xmin, xmax = viewer.ctrl.limits()[0]
+                if center_time is None:
+                    new_x0 = t0 * T_SCALAR
+                else:
+                    new_x0 = center_time * T_SCALAR - width / 2
+
+                # Preserve the previous zoom width without panning past the data.
+                if width >= xmax - xmin:
+                    new_x0, new_x1 = xmin, xmax
+                else:
+                    new_x0 = max(xmin, min(new_x0, xmax - width))
+                    new_x1 = new_x0 + width
+                viewer.viewBox_seismic.setXRange(new_x0, new_x1, padding=0)
+                viewer.viewBox_seismic.setYRange(yr_prev[0], yr_prev[1], padding=0)
 
     def closeEvent(self, event: QtGui.QCloseEvent | None) -> None:
         """
