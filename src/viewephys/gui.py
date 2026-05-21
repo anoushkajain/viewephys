@@ -377,7 +377,6 @@ class PickSpikes:
 class EphysViewer(EasyQC):
     """
     A window to view an array of data.
-
     """
 
     keyPressed = QtCore.Signal(int)
