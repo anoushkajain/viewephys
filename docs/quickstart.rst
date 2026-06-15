@@ -1,8 +1,8 @@
 Quickstart
 ==========
 
-This guide walks you through opening a recording and exploring the interface
-for the first time.
+This guide takes you from a raw electrophysiology file to an interactive
+viewer.
 
 Option 1: Command line (fastest)
 ---------------------------------

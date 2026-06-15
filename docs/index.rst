@@ -70,13 +70,13 @@ When to use viewephys?
 
    * - Stage
      - Use viewephys to…
-   * - **Before spike sorting**
+   * - Before spike sorting
      - Sanity-check raw data quality: gain, noise bands, dead channels
-   * - **After destriping**
+   * - After destriping
      - Compare raw vs cleaned traces side by side
-   * - **Before deep analysis**
+   * - Before deep analysis
      - Decide if a recording is worth processing further
-   * - **During troubleshooting**
+   * - During troubleshooting
      - Identify where in time or channels a problem occurs
 
 .. note::
@@ -99,6 +99,7 @@ a Python session or script.
 
    installation
    quickstart
+   interface
 
 .. toctree::
    :maxdepth: 1

@@ -1,0 +1,6 @@
+/* Slightly warmer code block colours and better admonition tint */
+.rst-content .note .admonition-title { background: #1D9E75; }
+.rst-content .note { background: #f0faf6; border-left: 4px solid #1D9E75; }
+.rst-content .warning .admonition-title { background: #c0392b; }
+.rst-content .tip .admonition-title { background: #2980b9; }
+.highlight { border-radius: 4px; }
