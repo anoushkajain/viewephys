@@ -4,86 +4,105 @@ Installation
 Requirements
 ------------
 
-Before installing viewephys, make sure you have:
+.. list-table::
+   :widths: 40 60
+   :header-rows: 1
 
-- **Python 3.10 or higher**
-- **pip** installed
-- A **Qt binding**: one of PyQt5, PyQt6, PySide2, or PySide6 (see below)
-- A virtual environment (recommended)
+   * - Requirement
+     - Version / notes
+   * - Python
+     - 3.8 or higher (3.12 recommended)
+   * - Operating system
+     - Linux, macOS, Windows
+   * - Qt backend
+     - Installed automatically via PyPI
 
-.. note::
+Option 1 — Install from PyPI (recommended)
+-------------------------------------------
 
-   viewephys renders its interface using Qt. You must have at least one Qt
-   binding installed, otherwise the viewer window will not appear.
-   PyQt5 is the most commonly used option.
+This is the fastest way to get started.
 
-Step 1 — Create a virtual environment
---------------------------------------
+**Step 1 — Create a virtual environment**
 
-On macOS / Linux:
+Using a virtual environment keeps viewephys isolated from your system Python.
+
+*Using conda (recommended):*
+
+.. code-block:: bash
+
+   conda create -n viewephys python=3.12
+   conda activate viewephys
+
+*Using venv:*
 
 .. code-block:: bash
 
    python -m venv venv
-   source venv/bin/activate
+   source venv/bin/activate        # macOS / Linux
+   venv\Scripts\activate           # Windows
 
-On Windows:
-
-.. code-block:: bat
-
-   python -m venv venv
-   venv\Scripts\activate
-
-
-Step 2 — Install viewephys
----------------------------
-
-Install the package from PyPI along with a Qt binding:
+**Step 2 — Install viewephys**
 
 .. code-block:: bash
 
-   pip install viewephys PyQt5
+   pip install viewephys
 
-If you prefer a different Qt backend:
-
-.. code-block:: bash
-
-   pip install viewephys PyQt6       # Qt 6
-   pip install viewephys PySide6     # PySide Qt 6
-
-Step 3 — Verify the installation
-----------------------------------
+**Step 3 — Verify the installation**
 
 .. code-block:: bash
 
    viewephys --help
 
-You should see:
+You should see available commands and options printed to the terminal.
 
-.. code-block:: text
+Option 2 — Install from source (development)
+---------------------------------------------
 
-   usage: viewephys [-h] [-f FILE]
-
-   Electrophysiology file viewer with preprocessing options
-
-   options:
-     -h, --help            show this help message and exit
-     -f FILE, --file FILE  path to the binary file to load
-
-Install from source
--------------------
-
-If you want the latest development version from GitHub:
+Use this if you want the latest unreleased changes or plan to contribute.
 
 .. code-block:: bash
 
    git clone https://github.com/int-brain-lab/viewephys.git
    cd viewephys
-   pip install -e ".[qt]"
+   pip install -e .
 
-IBL environment
+The ``-e`` flag installs in *editable mode*: changes you make to the source
+are immediately reflected without reinstalling.
+
+Option 3 — IBL unified environment
+------------------------------------
+
+If you are already using the
+`IBL unified environment (iblenv) <https://github.com/int-brain-lab/iblenv>`_,
+viewephys is compatible and can be installed into it directly:
+
+.. code-block:: bash
+
+   conda activate iblenv
+   pip install viewephys
+
+Troubleshooting
 ---------------
 
-viewephys is also compatible with the
-`IBL conda environment <https://github.com/int-brain-lab/iblenv>`_,
-which bundles all dependencies including the Qt binding.
+.. warning::
+
+   **Qt errors on Linux**
+
+   On headless Linux servers, the Qt GUI backend may fail. Run viewephys on a
+   machine with a display, or use a virtual display::
+
+      export DISPLAY=:0
+
+.. note::
+
+   **Older Python versions**
+
+   Python 3.8–3.11 are supported but 3.12 is recommended. If you see dependency
+   conflicts, create a fresh environment with Python 3.12.
+
+.. tip::
+
+   **Windows path issues**
+
+   If ``viewephys --help`` is not found after installation, ensure your virtual
+   environment is activated and that ``Scripts/`` is on your PATH.
