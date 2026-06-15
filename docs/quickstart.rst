@@ -53,6 +53,12 @@ You can open multiple windows at once — each must have a unique title:
 
    ve2 = viewephys(data * 50, fs=fs, title="amplified")
 
+.. figure:: view_rand_array.png
+   :alt: viewephys showing a NumPy array
+   :width: 100%
+
+   Two viewer windows displaying the same array at different gain levels.
+
 .. warning::
 
    The ``%gui qt`` magic must be run before creating any viewer window.
@@ -99,6 +105,13 @@ Exploring the interface
 ------------------------
 
 Once the viewer is open:
+
+.. figure:: raw_bin_viewer_destripe.png
+   :alt: viewephys binary file viewer showing destriped Neuropixels data
+   :width: 100%
+
+   The binary file viewer with destriped preprocessing selected.
+
 
 - **Horizontal slider** — scrubs through time
 - **Jump to box** — type a time in seconds and press Enter to jump directly
