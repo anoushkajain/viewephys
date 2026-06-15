@@ -3,7 +3,11 @@ viewephys
 
 **viewephys** is a lightweight Python tool developed by the
 `International Brain Laboratory (IBL) <https://www.internationalbrainlab.com/>`_
-to visualize raw electrophysiology data, particularly Neuropixels recordings.
+to visualize raw electrophysiology data.
+
+It is built for speed and simplicity: open a Neuropixels recording, scroll through
+channels and time, and get immediate visual feedback — without running a full analysis
+pipeline first.
 
 It is designed to help users:
 
@@ -13,7 +17,7 @@ It is designed to help users:
 - Identify noise, artifacts, or signal patterns interactively
 
 The tool focuses on **fast, interactive visualization** rather than heavy data
-processing or analysis.
+processing or analysis. It does not sort spikes, compute metrics, or modify your data.
 
 Who is it for?
 --------------
@@ -26,33 +30,42 @@ viewephys is intended for:
 
 We assume users:
 
-- Have basic familiarity with Python
-- Are comfortable using the command line
-- May not be familiar with the IBL ecosystem or this specific tool
+- have a raw electrophysiology file (.bin, .cbin, or a NumPy array) ready to view
+- have basic familiarity with Python
+- are comfortable using the command line
+- may be new to the IBL ecosystem — no prior IBL experience required
 
 What problems does it solve?
 -----------------------------
 
-Working with raw electrophysiology data is challenging because:
+Raw electrophysiology files are large often tens of gigabytes (hundreds of channels, tens of
+thousands of samples per second) , binary, and not human-readable. Most analysis tools require 
+significant setup before you can see anything.
 
-- Files are large (hundreds of channels, tens of thousands of samples per second)
-- Raw voltage traces are not immediately interpretable
-- Most visualization tools are heavy to set up or require scripting
 
 viewephys provides:
 
-- A **one-command way** to open and explore a recording
-- A **scrollable, zoomable interface** to navigate channels and time
-- **Four preprocessing views** side by side (raw, destripe, Butterworth, broadband),
-  so you can compare the effect of each step without leaving the viewer
-- A **spike-picking mode** for manually marking events of interest
+.. list-table::
+   :widths: 45 55
+   :header-rows: 1
+
+   * - Problem
+     - viewephys solution
+   * - Large binary files are hard to inspect
+     - Opens files without loading everything into memory
+   * - Noise and artefacts are hard to spot
+     - Density and wiggle display modes make signal quality immediately visible
+   * - Setting up analysis pipelines is slow
+     - Viewer launches in seconds with a single command
+   * - Multi-channel data is hard to navigate
+     - Scroll through all channels and time interactively
 
 What data formats does it support?
 ------------------------------------
 
 viewephys reads binary files produced by
 `SpikeGLX <https://billkarsh.github.io/SpikeGLX/>`_ (``.bin`` and ``.cbin``),
-which is the standard acquisition software for Neuropixels probes.
+which is one of the standard acquisition software for Neuropixels probes.
 It can also display any NumPy array directly, making it easy to use within
 a Python session or script.
 
