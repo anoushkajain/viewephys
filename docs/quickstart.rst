@@ -2,141 +2,147 @@ Quickstart
 ==========
 
 This guide takes you from a raw electrophysiology file to an interactive
-viewer.
+viewer in under five minutes.
 
-Option 1: Command line (fastest)
----------------------------------
+----
 
-If you have a SpikeGLX binary file (``.bin`` or ``.cbin``), launch the viewer
-directly from the terminal:
+Option A — Open a file from the command line
+--------------------------------------------
 
-.. code-block:: bash
-
-   viewephys -f /path/to/your/recording.ap.bin
-
-The viewer opens with a navigation window. Use the horizontal slider to scrub
-through time, or type a time in seconds in the **Jump to** box and press Enter.
-
-To open an empty viewer and load a file via the menu instead:
+The simplest way to start:
 
 .. code-block:: bash
 
-   viewephys
+   viewephys -f /path/to/your/recording.bin
 
-Then use **File → Open** to select your recording.
+The viewer opens immediately. Replace the path with your actual ``.bin`` or ``.cbin`` file.
 
-.. note::
+.. tip::
 
-   The ``-f`` flag is required when passing a file path on the command line.
-   ``viewephys /path/to/file.bin`` (without ``-f``) will not work.
+   Don't have a recording yet? Jump to **Option C** below to generate synthetic
+   data and explore the interface without any real files.
 
-Option 2: Interactive Python session (IPython / Jupyter)
----------------------------------------------------------
+----
+
+Option B — Open a file from the GUI
+------------------------------------
+
+1. Launch the viewer with no arguments:
+
+   .. code-block:: bash
+
+      viewephys
+
+2. From the menu bar, choose **File → Open**.
+3. Navigate to your ``.bin`` or ``.cbin`` file and select it.
+
+----
+
+Option C — Load a NumPy array in Python
+----------------------------------------
+
+You can pass data directly from Python — useful for testing or for
+integrating viewephys into an existing analysis script.
 
 .. code-block:: python
-
-   # In IPython, enable the Qt event loop first:
-   %gui qt
 
    import numpy as np
    from viewephys.gui import viewephys
 
    # Simulate one second of Neuropixels data (384 channels, 30 kHz)
-   nc, ns, fs = 384, 50000, 30000
-   data = np.random.randn(nc, ns) / 1e6  # values in volts
+   nc, ns, fs = 384, 30_000, 30_000
+   data = np.random.randn(nc, ns) / 1e6  # data in Volts
 
    ve = viewephys(data, fs=fs)
 
-You can open multiple windows at once — each must have a unique title:
+.. note::
 
-.. code-block:: python
+   **IPython / Jupyter users**
 
-   ve2 = viewephys(data * 50, fs=fs, title="amplified")
+   If you are running this inside IPython or a Jupyter notebook, add the Qt
+   event loop magic before importing::
 
-.. figure:: view_rand_array.png
-   :alt: viewephys showing a NumPy array
-   :width: 100%
+      %gui qt
 
-   Two viewer windows displaying the same array at different gain levels.
+----
 
-.. warning::
+What you will see
+-----------------
 
-   The ``%gui qt`` magic must be run before creating any viewer window.
-   Without it, the window will appear frozen or will not respond to input.
+Once the viewer opens, you will see a density-mode display:
 
-Option 3: From a Python script
--------------------------------
+- **Dark regions** = low activity or noise
+- **Light regions** = signal events (spikes, LFP)
+- **Vertical bright stripes** = electrical artefacts (noise bands)
 
-Scripts do not have a persistent Qt event loop the way IPython does.
-You must create the application yourself and call ``app.exec()`` at the end,
-otherwise the window closes immediately.
+----
 
-**Viewing a binary file from a script:**
-
-.. code-block:: python
-
-   from pathlib import Path
-   from viewephys.gui import EphysBinViewer, create_app
-
-   app = create_app()
-
-   viewer = EphysBinViewer(Path("/path/to/your/recording.ap.bin"))
-
-   app.exec()
-
-**Viewing a NumPy array from a script:**
-
-.. code-block:: python
-
-   import numpy as np
-   from viewephys.gui import viewephys, create_app
-
-   app = create_app()
-
-   nc, ns, fs = 384, 50000, 30000
-   data = np.random.randn(nc, ns) / 1e6
-
-   ve = viewephys(data, fs=fs)
-   ve2 = viewephys(data * 50, fs=fs, title="amplified")
-
-   app.exec()
-
-Exploring the interface
-------------------------
-
-Once the viewer is open:
-
-.. figure:: raw_bin_viewer_destripe.png
-   :alt: viewephys binary file viewer showing destriped Neuropixels data
-   :width: 100%
-
-   The binary file viewer with destriped preprocessing selected.
-
-
-- **Horizontal slider** — scrubs through time
-- **Jump to box** — type a time in seconds and press Enter to jump directly
-- **Checkboxes** (raw, destripe, butterworth, broadband) — open side-by-side
-  views of the same data at different preprocessing stages
-- **Ctrl + Z** — reduce gain by 3 dB
-- **Ctrl + A** — increase gain by 3 dB
-- **Ctrl + P** — link pan and zoom across all open windows
-
-Common issues
---------------
+Navigating the viewer
+---------------------
 
 .. list-table::
-   :widths: 40 60
+   :widths: 45 55
    :header-rows: 1
 
-   * - Problem
-     - Solution
-   * - ``ImportError: cannot import name 'viewephys' from 'viewephys'``
-     - Use ``from viewephys.gui import viewephys``, not ``from viewephys import viewephys``
-   * - Window opens but is frozen
-     - In IPython, run ``%gui qt`` before creating the viewer
-   * - Window closes immediately in a script
-     - Add ``app = create_app()`` before the viewer and ``app.exec()`` at the end
-   * - File not found
-     - Check the path; use the ``-f`` flag on the command line
-   * - No window appears at all
-     - Ensure a Qt binding is installed: ``pip install PyQt5``
+   * - Action
+     - How
+   * - Scroll through time
+     - Mouse wheel or drag
+   * - Switch channels
+     - Scroll vertically
+   * - Zoom in / out
+     - Ctrl + scroll
+   * - Increase gain
+     - ``Ctrl + A``
+   * - Decrease gain
+     - ``Ctrl + Z``
+   * - Switch display mode
+     - Menu → **View** → Density / Wiggle
+   * - Link multiple windows
+     - ``Ctrl + P`` (multi-window mode)
+
+To inspect a specific channel, hover over it — the channel number and voltage
+update in real time in the bottom-left status bar. See the :doc:`interface`
+guide for a full explanation of every control and menu option.
+
+----
+
+Step-by-step: your first quality check
+---------------------------------------
+
+Follow this sequence when opening a new recording for the first time:
+
+**1. Check the gain**
+
+When the file first opens, the default gain may make the trace look flat or clipped.
+Press ``Ctrl + A`` a few times to increase gain until individual channels become visible.
+
+**2. Identify noise bands**
+
+Look for bright vertical stripes spanning all channels simultaneously.
+These are electrical artefacts (often 50 or 60 Hz line noise), not neural signal.
+Note their position in time — you will want to remove them with
+``ibldsp.voltage.destripe()`` before sorting.
+
+**3. Find a clean region**
+
+Scroll to a region where channels show clear contrast — dark background with bright
+deflections on a few channels. This indicates good signal-to-noise ratio (SNR).
+
+**4. Check for probe drift**
+
+Scroll through time and watch whether active channels gradually shift upward or downward.
+Gradual channel migration over time indicates probe drift, which should be corrected
+before spike sorting.
+
+----
+
+Next steps
+----------
+
+Now that you can open and navigate a recording:
+
+- Read the full :doc:`controls` reference for all keyboard shortcuts
+- See the :doc:`faq` for common issues
+- Explore the `IBL documentation hub <https://docs.internationalbrainlab.org>`_
+  for the next steps in the pipeline (destriping, spike sorting, quality metrics)

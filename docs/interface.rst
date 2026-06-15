@@ -255,15 +255,3 @@ Access via **Pick** in the menu bar:
        (e.g. marking it as a bad channel or a channel of interest).
 
 ----
-
-Jump to a time point
---------------------
-
-At the bottom of the startup window (and accessible while viewing), the
-**Jump to** field lets you navigate directly to a specific time in the recording:
-
-1. Enter a time in **seconds** in the text box
-2. Click **Go**
-
-The trace view will jump to that position immediately. Useful for long recordings
-where scrolling would take too long.
