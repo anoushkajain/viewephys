@@ -95,39 +95,11 @@ a Python session or script.
 .. toctree::
    :maxdepth: 1
    :hidden:
-   :caption: Getting Started
 
    installation
    quickstart
    interface
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: Tutorials
-
-   tutorials
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: How to Guides
-
-   controls
-   preprocessing
-   pick_spikes
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: Reference
-
-   api
-   release_notes
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: Community
-
+   control
+   faq
    community
+   release_notes
