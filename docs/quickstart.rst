@@ -6,7 +6,7 @@ viewer in under five minutes.
 
 ----
 
-Option A — Open a file from the command line
+Option 1 — Open a file from the command line
 --------------------------------------------
 
 The simplest way to start:
@@ -24,7 +24,7 @@ The viewer opens immediately. Replace the path with your actual ``.bin`` or ``.c
 
 ----
 
-Option B — Open a file from the GUI
+Option 2 — Open a file from the GUI
 ------------------------------------
 
 1. Launch the viewer with no arguments:
@@ -38,7 +38,7 @@ Option B — Open a file from the GUI
 
 ----
 
-Option C — Load a NumPy array in Python
+Option 3 — Load a NumPy array in Python
 ----------------------------------------
 
 You can pass data directly from Python — useful for testing or for
@@ -50,7 +50,7 @@ integrating viewephys into an existing analysis script.
    from viewephys.gui import viewephys
 
    # Simulate one second of Neuropixels data (384 channels, 30 kHz)
-   nc, ns, fs = 384, 30_000, 30_000
+   nc, ns, fs = 384, 50_000, 30_000
    data = np.random.randn(nc, ns) / 1e6  # data in Volts
 
    ve = viewephys(data, fs=fs)
@@ -59,10 +59,24 @@ integrating viewephys into an existing analysis script.
 
    **IPython / Jupyter users**
 
-   If you are running this inside IPython or a Jupyter notebook, add the Qt
+   If you are running inside IPython or a Jupyter notebook, add the Qt
    event loop magic before importing::
 
       %gui qt
+
+**Opening multiple windows**
+
+viewephys supports multiple instances simultaneously. Each window must
+have a unique title:
+
+.. code-block:: python
+
+   data2 = data * 50
+   ve2 = viewephys(data2, fs=fs, title="plot 2")
+
+This is useful for comparing two versions of the same recording side by
+side — for example, raw vs destriped data. See :doc:`interface` for how 
+to link windows and run viewephys from a script.
 
 ----
 
@@ -71,9 +85,27 @@ What you will see
 
 Once the viewer opens, you will see a density-mode display:
 
-- **Dark regions** = low activity or noise
-- **Light regions** = signal events (spikes, LFP)
-- **Vertical bright stripes** = electrical artefacts (noise bands)
+.. image:: _static/viewephys_gui.JPG
+   :alt: viewephys main trace window showing density-mode display with channels 180-230
+   :align: center
+   :width: 95%
+
+|
+
+.. note::
+
+   This screenshot shows channels 180–230. The viewer loads all channels —
+   scroll vertically to navigate the full probe depth.
+
+- **Dark regions** — low activity or background noise
+- **Light regions** — signal events (spikes, LFP deflections)
+- **Vertical dark band** (e.g. at t = 65 ms) — electrical artefact (noise band)
+- **Status bar** (bottom left) — updates as you hover: voltage, signal value, and channel number
+
+.. tip::
+
+   If the trace looks flat when you first open a file, press ``Ctrl + A``
+   a few times to increase the gain until individual channels become visible.
 
 ----
 
@@ -142,7 +174,7 @@ Next steps
 
 Now that you can open and navigate a recording:
 
-- Read the full :doc:`controls` reference for all keyboard shortcuts
+- Read the full :doc:`control` reference for all keyboard shortcuts
 - See the :doc:`faq` for common issues
 - Explore the `IBL documentation hub <https://docs.internationalbrainlab.org>`_
   for the next steps in the pipeline (destriping, spike sorting, quality metrics)

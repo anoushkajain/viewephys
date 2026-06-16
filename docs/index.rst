@@ -74,8 +74,6 @@ When to use viewephys?
      - Sanity-check raw data quality: gain, noise bands, dead channels
    * - After destriping
      - Compare raw vs cleaned traces side by side
-   * - Before deep analysis
-     - Decide if a recording is worth processing further
    * - During troubleshooting
      - Identify where in time or channels a problem occurs
 

@@ -91,8 +91,8 @@ The main trace view
 
 Once a file is loaded, the main trace window opens:
 
-.. image:: _static/gui_view_menu.png
-   :alt: viewephys main trace window in density mode with View menu open
+.. image:: _static/viewephys_fullgui.jpg
+   :alt: viewephys main trace window showing full probe depth, all channels, density mode
    :align: center
    :width: 95%
 
@@ -255,3 +255,83 @@ Access via **Pick** in the menu bar:
        (e.g. marking it as a bad channel or a channel of interest).
 
 ----
+
+Advanced usage
+--------------
+
+This page covers usage patterns beyond the interactive console —
+running viewephys from a script, opening binary files programmatically,
+and managing multiple windows.
+
+----
+
+Why ``create_app()``?
+---------------------
+
+When running viewephys interactively (IPython, Jupyter, or the command
+line), the Qt application loop is managed for you. When running from a
+**Python script**, you must create and start the Qt application yourself
+using ``create_app()`` and ``app.exec()``.
+
+----
+
+Opening a binary file from a script
+------------------------------------
+
+.. code-block:: python
+
+   from viewephys.gui import EphysBinViewer, create_app
+
+   app = create_app()
+
+   viewer = EphysBinViewer(r"C:\Data\recording_g0_t0.imec0.ap.bin")
+
+   app.exec()
+
+.. note::
+
+   ``app.exec()`` must be the last line of your script. It starts the Qt
+   event loop and blocks until the window is closed.
+
+----
+
+Loading a NumPy array from a script
+-------------------------------------
+
+.. code-block:: python
+
+   import numpy as np
+   from viewephys.gui import viewephys, create_app
+
+   app = create_app()
+
+   nc, ns, fs = 384, 50_000, 30_000
+   data = np.random.randn(nc, ns) / 1e6  # Volts
+
+   ve  = viewephys(data,      fs=fs)
+   ve2 = viewephys(data * 50, fs=fs, title="plot 2")
+
+   app.exec()
+
+----
+
+Opening multiple windows
+------------------------
+
+viewephys supports multiple simultaneous instances. Each window must
+have a unique ``title``:
+
+.. code-block:: python
+
+   ve  = viewephys(raw,   fs=fs, title="raw")
+   ve2 = viewephys(clean, fs=fs, title="destriped")
+
+To synchronise pan, zoom, and gain across windows, press ``Ctrl + P``
+in either window after both are open. See :doc:`controls` for the full
+keyboard reference.
+
+.. tip::
+
+   Multiple windows are particularly useful for comparing raw vs
+   destriped traces side by side. Open the same time window in both
+   and use ``Ctrl + P`` to lock them together.
