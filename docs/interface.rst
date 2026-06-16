@@ -91,8 +91,8 @@ The main trace view
 
 Once a file is loaded, the main trace window opens:
 
-.. image:: _static/viewephys_fullgui.jpg
-   :alt: viewephys main trace window showing full probe depth, all channels, density mode
+.. image:: _static/viewephys_fullgui.JPG
+   :alt: viewephys main trace window showing full probe depth, all channels, in density mode
    :align: center
    :width: 95%
 
