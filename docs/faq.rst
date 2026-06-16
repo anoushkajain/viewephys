@@ -75,6 +75,17 @@ Pass them directly via Python:
 
 ----
 
+**Can I open OpenEphys recordings?**
+
+viewephys natively supports ``.bin`` and ``.cbin`` files (SpikeGLX format).
+OpenEphys recordings are not directly supported. However, if your OpenEphys
+data is saved as a raw binary ``.dat`` file, you can load it via Python by
+passing the channel count and sampling rate manually. For full format
+conversion support, use
+`SpikeInterface <https://spikeinterface.readthedocs.io>`_ to convert your
+recording to a compatible format first.
+
+
 Interpreting the trace
 -----------------------
 

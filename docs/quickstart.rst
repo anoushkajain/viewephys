@@ -1,13 +1,50 @@
 Quickstart
 ==========
 
-This guide takes you from a raw electrophysiology file to an interactive
-viewer in under five minutes.
+Goal
+----
+
+In this section you will:
+
+- Load a dataset
+- Launch the viewer
+- Navigate through the data
 
 ----
 
-Option 1 — Open a file from the command line
---------------------------------------------
+Step 1 — Prepare your data
+--------------------------
+
+viewephys works with electrophysiology data files (e.g. binary recordings
+such as ``.bin`` files). Make sure you have:
+
+- A valid data file (``.bin`` or ``.cbin``)
+- Knowledge of its sampling rate and channel structure ( you can usually find this in the metadata file, e.g. ``.meta`` or ``.ch``)
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Extension
+     - Description
+   * - ``.bin``
+     - Raw binary Neuropixels recording (SpikeGLX format)
+   * - ``.cbin``
+     - IBL compressed binary format (requires ``mtscomp``)
+
+.. note::
+
+   viewephys reads the metadata file (``.meta`` or ``.ch``) automatically
+   if it is in the same folder as your data file. If no metadata file is
+   found, you will be asked to provide the channel count and sampling rate
+   manually.
+
+----
+
+Step 2 — Launch the viewer
+--------------------------
+
+**From the command line**
 
 The simplest way to start:
 
@@ -15,17 +52,9 @@ The simplest way to start:
 
    viewephys -f /path/to/your/recording.bin
 
-The viewer opens immediately. Replace the path with your actual ``.bin`` or ``.cbin`` file.
+The viewer opens immediately.
 
-.. tip::
-
-   Don't have a recording yet? Jump to **Option C** below to generate synthetic
-   data and explore the interface without any real files.
-
-----
-
-Option 2 — Open a file from the GUI
-------------------------------------
+**From the GUI**
 
 1. Launch the viewer with no arguments:
 
@@ -33,16 +62,16 @@ Option 2 — Open a file from the GUI
 
       viewephys
 
-2. From the menu bar, choose **File → Open**.
-3. Navigate to your ``.bin`` or ``.cbin`` file and select it.
+2. From the menu bar, choose **File → Open**
+3. Navigate to your ``.bin`` or ``.cbin`` file and select it
 
 ----
 
-Option 3 — Load a NumPy array in Python
-----------------------------------------
+Step 3 — Load from Python (optional)
+--------------------------------------
 
-You can pass data directly from Python — useful for testing or for
-integrating viewephys into an existing analysis script.
+You can also use viewephys within a Python session — useful for testing
+or integrating the viewer into an existing analysis script:
 
 .. code-block:: python
 
@@ -59,15 +88,14 @@ integrating viewephys into an existing analysis script.
 
    **IPython / Jupyter users**
 
-   If you are running inside IPython or a Jupyter notebook, add the Qt
-   event loop magic before importing::
+   Add the Qt event loop magic before importing::
 
       %gui qt
 
 **Opening multiple windows**
 
-viewephys supports multiple instances simultaneously. Each window must
-have a unique title:
+viewephys supports multiple instances simultaneously.
+Each window must have a unique title:
 
 .. code-block:: python
 
@@ -75,13 +103,13 @@ have a unique title:
    ve2 = viewephys(data2, fs=fs, title="plot 2")
 
 This is useful for comparing two versions of the same recording side by
-side — for example, raw vs destriped data. See :doc:`interface` for how 
+side — for example, raw vs destriped data. See :doc:`interface` for how
 to link windows and run viewephys from a script.
 
 ----
 
-What you will see
------------------
+Step 4 — Explore the interface
+-------------------------------
 
 Once the viewer opens, you will see a density-mode display:
 
@@ -99,18 +127,11 @@ Once the viewer opens, you will see a density-mode display:
 
 - **Dark regions** — low activity or background noise
 - **Light regions** — signal events (spikes, LFP deflections)
-- **Vertical dark band** (e.g. at t = 65 ms) — electrical artefact (noise band)
-- **Status bar** (bottom left) — updates as you hover: voltage, signal value, and channel number
+- **Vertical dark band** — electrical artefact (noise band)
+- **Status bar** (bottom left) — updates as you hover: voltage, signal
+  value, and channel number
 
-.. tip::
-
-   If the trace looks flat when you first open a file, press ``Ctrl + A``
-   a few times to increase the gain until individual channels become visible.
-
-----
-
-Navigating the viewer
----------------------
+**Navigating the viewer**
 
 .. list-table::
    :widths: 45 55
@@ -133,39 +154,42 @@ Navigating the viewer
    * - Link multiple windows
      - ``Ctrl + P`` (multi-window mode)
 
-To inspect a specific channel, hover over it — the channel number and voltage
-update in real time in the bottom-left status bar. See the :doc:`interface`
-guide for a full explanation of every control and menu option.
+To inspect a specific channel, hover over it — the channel number and
+voltage update in real time in the bottom-left status bar. See the
+:doc:`interface` guide for a full explanation of every control and menu
+option.
 
 ----
 
-Step-by-step: your first quality check
----------------------------------------
+Step 5 — Your first quality check
+-----------------------------------
 
 Follow this sequence when opening a new recording for the first time:
 
 **1. Check the gain**
 
-When the file first opens, the default gain may make the trace look flat or clipped.
-Press ``Ctrl + A`` a few times to increase gain until individual channels become visible.
+When the file first opens, the default gain may make the trace look flat
+or clipped. Press ``Ctrl + A`` a few times to increase gain until
+individual channels become visible.
 
 **2. Identify noise bands**
 
 Look for bright vertical stripes spanning all channels simultaneously.
-These are electrical artefacts (often 50 or 60 Hz line noise), not neural signal.
-Note their position in time — you will want to remove them with
+These are electrical artefacts (often 50 or 60 Hz line noise), not neural
+signal. Note their position in time — you will want to remove them with
 ``ibldsp.voltage.destripe()`` before sorting.
 
 **3. Find a clean region**
 
-Scroll to a region where channels show clear contrast — dark background with bright
-deflections on a few channels. This indicates good signal-to-noise ratio (SNR).
+Scroll to a region where channels show clear contrast — dark background
+with bright deflections on a few channels. This indicates good
+signal-to-noise ratio (SNR).
 
 **4. Check for probe drift**
 
-Scroll through time and watch whether active channels gradually shift upward or downward.
-Gradual channel migration over time indicates probe drift, which should be corrected
-before spike sorting.
+Scroll through time and watch whether active channels gradually shift
+upward or downward. Gradual channel migration over time indicates probe
+drift, which should be corrected before spike sorting.
 
 ----
 
@@ -174,7 +198,10 @@ Next steps
 
 Now that you can open and navigate a recording:
 
-- Read the full :doc:`control` reference for all keyboard shortcuts
+- Read the :doc:`interface` guide for a full explanation of every control
+  and menu option
+- Read the :doc:`controls` reference for all keyboard shortcuts
 - See the :doc:`faq` for common issues
 - Explore the `IBL documentation hub <https://docs.internationalbrainlab.org>`_
-  for the next steps in the pipeline (destriping, spike sorting, quality metrics)
+  for the next steps in the pipeline (destriping, spike sorting, quality
+  metrics)
