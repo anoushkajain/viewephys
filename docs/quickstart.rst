@@ -1,8 +1,8 @@
 Quickstart
 ==========
 
-Goal
-----
+viewephys is designed to be intuitive and easy to use. This quickstart guide walks you 
+through the basics of opening a recording and navigating the viewer.
 
 In this section you will:
 
