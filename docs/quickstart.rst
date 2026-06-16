@@ -4,12 +4,6 @@ Quickstart
 viewephys is designed to be intuitive and easy to use. This quickstart guide walks you 
 through the basics of opening a recording and navigating the viewer.
 
-In this section you will:
-
-- Load a dataset
-- Launch the viewer
-- Navigate through the data
-
 ----
 
 Step 1 — Prepare your data
@@ -37,7 +31,7 @@ such as ``.bin`` files). Make sure you have:
    viewephys reads the metadata file (``.meta`` or ``.ch``) automatically
    if it is in the same folder as your data file. If no metadata file is
    found, you will be asked to provide the channel count and sampling rate
-   manually.
+   manually. Questions regarding OpenEphys format support? See the :doc:`faq` for details.
 
 ----
 
