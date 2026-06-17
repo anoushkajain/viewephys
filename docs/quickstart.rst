@@ -42,9 +42,12 @@ If no metadata file is found, you can load your data manually from Python:
    data = data[:384, :]           # drop sync channel
    ve = viewephys(data / 1e6, fs=30_000)   # convert to Volts
 
-Don't have a recording to hand? Download `this test dataset
-<https://drive.google.com/drive/folders/1k2yyHH0XBNG8y4BgSm7R7tFD4SfA-QTs?usp=drive_link>`_
-to see what a real recording and its metadata file look like.
+
+Don't have a recording to hand? Download the
+`sample good_recording dataset <https://drive.google.com/drive/folders/1IXXsAL1kRAvlOKQdXgu5i7n1YW2vSehA?usp=drive_link>`_
+to see what a real Neuropixels recording and its metadata file look like.
+A noisy example is also available on the :doc:`interface` page under
+*Try it yourself*.
 
 For other formats (NWB, Nix, proprietary acquisition formats), convert
 to binary first using `SpikeInterface <https://spikeinterface.readthedocs.io>`_.

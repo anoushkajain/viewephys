@@ -29,8 +29,8 @@ We assume users:
 Why does this matter?
 ----------------------
 
-Raw electrophysiology files are large — often tens of gigabytes, with hundreds
-of channels sampled tens of thousands of times per second — binary, and not
+Raw electrophysiology files are large, often tens of gigabytes, with hundreds
+of channels sampled tens of thousands of times per second in a binary format, and not
 human-readable on their own. Most analysis tools require significant setup
 before you can see anything at all.
 

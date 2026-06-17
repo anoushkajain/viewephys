@@ -3,7 +3,6 @@ FAQ
 
 ----
 
-
 Loading data
 ------------
 
@@ -14,35 +13,17 @@ times until individual channels become visible.
 
 ----
 
-Opening compressed ``.cbin`` files
-------------------------------------
+**How do I open compressed** ``.cbin`` **files?**
 
 IBL compressed binary files (``.cbin``) require the ``mtscomp`` package to
-decompress on the fly. If you plan to open ``.cbin`` files, install it
-alongside viewephys:
+decompress on the fly. Install it alongside viewephys:
 
 .. code-block:: bash
 
    pip install mtscomp
 
-.. note::
-
-   ``mtscomp`` is not installed automatically with viewephys. If you try to
-   open a ``.cbin`` file without it, you will see an import error. Standard
-   ``.bin`` files do not require ``mtscomp``.
-
-----
-
-
-Interpreting the trace
------------------------
-
-**What are the bright vertical stripes?**
-
-Vertical stripes spanning all channels simultaneously are electrical
-artefacts — typically 50 Hz (Europe) or 60 Hz (US) line noise, or a
-ground loop issue. They are not neural signal. Apply
-``ibldsp.voltage.destripe()`` before spike sorting to remove them.
+For more information see the
+`mtscomp repository <https://github.com/int-brain-lab/mtscomp>`_.
 
 ----
 
@@ -56,8 +37,9 @@ Signs of a good recording in density mode:
 - Signal visible above background noise on multiple channels
 
 For a quantitative assessment, run IBL quality metrics via
-``brainbox.metrics`` after spike sorting.
-
+``brainbox.metrics`` after spike sorting, can also use
+`SpikeInterface <https://spikeinterface.readthedocs.io>`_'s quality
+metrics and curation tools.
 
 ----
 
@@ -83,4 +65,3 @@ Yes. Add the Qt magic before importing:
 
 No. viewephys is completely standalone and does not require any other
 IBL library. It can be used independently on any Neuropixels recording.
-----

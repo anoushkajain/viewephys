@@ -248,103 +248,7 @@ Enable pick mode via **Pick → Pick** in the menu bar.
        spike event. Shift+click to remove a nearby mark. Right-click or press
        ``Space`` to increment the spike group number. 
    * - **Label channels**
-     - Toggle menu item. Not yet implemented — checking it has no effect.
-
-----
-
-
-Multi-window mode
------------------
-
-Open multiple viewephys windows (e.g. raw vs destriped) and press
-``Ctrl + P`` to link them. Panning, zooming, and gain changes then
-synchronise across all linked windows.
-
-.. code-block:: python
-
-   from viewephys.gui import viewephys
-   import numpy as np
-
-   # Two windows linked for comparison
-   raw   = np.random.randn(384, 30_000) / 1e6
-   clean = raw * 0.5  # simulated destriped data
-
-   w = {}
-   w['raw']   = viewephys(raw,   fs=30_000, title='raw')
-   w['clean'] = viewephys(clean, fs=30_000, title='destriped')
-   # Press Ctrl+P in either window to link them
-
-----
-
-Jump to a time point
---------------------
-
-At the bottom of the viewer, the **Jump to** field lets you navigate
-directly to a specific time:
-
-1. Enter a time in **seconds** in the text box
-2. Click **Go**
-
-The trace view jumps to that position immediately.
-
-----
-
-Advanced usage
---------------
-
-This page covers usage patterns beyond the interactive console —
-running viewephys from a script, opening binary files programmatically,
-and managing multiple windows.
-
-----
-
-Why ``create_app()``?
----------------------
-
-When running viewephys interactively (IPython, Jupyter, or the command
-line), the Qt application loop is managed for you. When running from a
-**Python script**, you must create and start the Qt application yourself
-using ``create_app()`` and ``app.exec()``.
-
-----
-
-Opening a binary file from a script
-------------------------------------
-
-.. code-block:: python
-
-   from viewephys.gui import EphysBinViewer, create_app
-
-   app = create_app()
-
-   viewer = EphysBinViewer(r"C:\Data\recording_g0_t0.imec0.ap.bin")
-
-   app.exec()
-
-.. note::
-
-   ``app.exec()`` must be the last line of your script. It starts the Qt
-   event loop and blocks until the window is closed.
-
-----
-
-Loading a NumPy array from a script
--------------------------------------
-
-.. code-block:: python
-
-   import numpy as np
-   from viewephys.gui import viewephys, create_app
-
-   app = create_app()
-
-   nc, ns, fs = 384, 50_000, 30_000
-   data = np.random.randn(nc, ns) / 1e6  # Volts
-
-   ve  = viewephys(data,      fs=fs)
-   ve2 = viewephys(data * 50, fs=fs, title="plot 2")
-
-   app.exec()
+     - Toggle menu item. Not yet implemented, so checking it has no effect.
 
 ----
 
@@ -364,6 +268,29 @@ in either window after both are open.
 
 .. tip::
 
-   Multiple windows are particularly useful for comparing raw vs
-   destriped traces side by side. Open the same time window in both
-   and use ``Ctrl + P`` to lock them together.
+   use ``Ctrl + P`` to lock them together.
+
+   ----
+
+Try it yourself
+---------------
+
+Two sample Neuropixels recordings are available to explore with viewephys —
+one with low noise and one with high noise, so you can see how different
+data quality looks in the viewer.
+
+.. list-table::
+   :widths: 20 50 30
+   :header-rows: 1
+
+   * - Recording
+     - Description
+     - Download
+   * - ``good_recording``
+     - Low noise level. Clear signal with good channel contrast.
+     - `Download <https://drive.google.com/drive/folders/1IXXsAL1kRAvlOKQdXgu5i7n1YW2vSehA?usp=drive_link>`_
+   * - ``noisy_recording``
+     - High noise level. Prominent artefact bands across channels.
+     - `Download <https://drive.google.com/drive/folders/1H27FvFgWmueIj-5MC93irfg-ba196Bp4?usp=drive_link>`_
+
+
