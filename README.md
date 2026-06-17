@@ -81,7 +81,7 @@ docs/
 **Step 1 — Clone the repository**
 
 ```shell
-git clone https://github.com/int-brain-lab/viewephys.git
+git clone https://github.com/anoushkajain/viewephys.git
 cd viewephys
 ```
 
