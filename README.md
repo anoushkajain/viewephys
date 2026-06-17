@@ -41,14 +41,6 @@ see the [quickstart guide](https://anoushkajain.github.io/viewephys/quickstart.h
 | `Ctrl + Z` | Decrease display gain (−3 dB) |
 | `Ctrl + P` | Link pan, zoom, and gain across open windows |
 
-**Pick mode** (enable via **Pick → Pick** in the menu bar):
-
-| Action | Effect |
-|---|---|
-| Left-click | Mark a spike |
-| Shift + left-click | Remove nearest mark |
-| Right-click or Space | Increment spike group number |
-
 For the full interface reference see the [interface guide](https://anoushkajain.github.io/viewephys/interface.html).
 
 ## Documentation
