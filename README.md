@@ -1,115 +1,114 @@
 # viewephys
-Neuropixel raw data viewer
+
+It is a lightweight Python tool developed by the
+[International Brain Laboratory (IBL)](https://www.internationalbrainlab.com/)
+to visualize raw Neuropixel electrophysiology data.
 
 ## Installation
-`pip install viewephys`
 
-Alternatively, in development mode:
+```shell
+pip install viewephys
+```
+
+For a virtual environment setup, development install, and Qt backend options,
+see the [installation guide](https://anoushkajain.github.io/viewephys/installation.html).
+
+## Quick start
+
+```shell
+viewephys                        # open the GUI, then File → Open
+viewephys -f /path/to/raw.bin   # open a specific file directly
+```
+
+Or from Python:
+
+```python
+import numpy as np
+from viewephys.gui import viewephys
+
+data = np.random.randn(384, 50000) / 1e6  # (channels, samples) in Volts
+ve = viewephys(data, fs=30000)
+```
+
+For a full walkthrough — including script usage and loading NumPy arrays —
+see the [quickstart guide](https://anoushkajain.github.io/viewephys/quickstart.html).
+
+## Controls
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl + A` | Increase display gain (+3 dB) |
+| `Ctrl + Z` | Decrease display gain (−3 dB) |
+| `Ctrl + P` | Link pan, zoom, and gain across open windows |
+
+**Pick mode** (enable via **Pick → Pick** in the menu bar):
+
+| Action | Effect |
+|---|---|
+| Left-click | Mark a spike |
+| Shift + left-click | Remove nearest mark |
+| Right-click or Space | Increment spike group number |
+
+For the full interface reference see the [interface guide](https://anoushkajain.github.io/viewephys/interface.html).
+
+## Documentation
+
+The full hosted documentation is at **https://anoushkajain.github.io/viewephys/index.html**
+and covers installation, the quickstart guide, the full interface reference, and the FAQ.
+
+### Documentation source
+
+The docs live in the [`docs/`](docs/) directory and are built with
+[Sphinx](https://www.sphinx-doc.org/) using the
+[Furo](https://pradyunsg.me/furo/) theme.
+
+```
+docs/
+├── conf.py            # Sphinx configuration
+├── requirements.txt   # Sphinx build dependencies
+├── index.rst          # Landing page and toctree
+├── installation.rst
+├── quickstart.rst
+├── interface.rst
+├── faq.rst
+├── community.rst
+├── release_notes.rst
+└── _static/           # Images and assets
+```
+
+### Build the documentation locally
+
+**Step 1 — Clone the repository**
+
 ```shell
 git clone https://github.com/int-brain-lab/viewephys.git
 cd viewephys
-pip install -e .
 ```
 
-### Supported environments
-This is compatible with the [IBL environment](https://github.com/int-brain-lab/iblenv)
+> To contribute documentation changes, fork the repository on GitHub first,
+> then clone your fork instead.
 
-Otherwise, you can create a new environment as such:
+**Step 2 — Install the build dependencies**
+
 ```shell
-conda create -n viewephys python=3.12
-conda activate viewephys
+pip install -r docs/requirements.txt
 ```
-And then follow the install instructions above.
 
-## Controls
-- `ctrl + z`: -3dB gain
-- `ctrl + a`: +3dB gain
-- `ctrl + p`: in multi-windows mode, link the displays (pan, zoom and gain)
+**Step 3 — Build the HTML**
 
-### Pick spikes
-When the picking mode is enabled (menu pick)
-- left button click sets a point
-- shift + left button removes a point
-- control + left does not wrap on maximum around pick
-- space increments the spike group number
-
-
-## Examples
-
-### Visualize raw binary file through the command line
-Activate your environment and type `viewephys`, you can then load a neuropixel binary file using the file menu.
-
-![alt text](./docs/raw_bin_viewer_destripe.png "Ephys viewer ")
-
-Alternatively you can point the viewer to a specific file using the command line:
 ```shell
-viewphys -f /path/to/raw.bin
+sphinx-build -b html docs docs/_build/html
 ```
 
-### Load in a numpy array or slice
+**Step 4 — Open in a browser**
 
-`viewephys` can be used through the Python console or iPython, allowing you to create
-multiple instances of the viewer at once.
-
-
-```python
-# if running ipython, you may have to use the `%gui qt` magic command
-import numpy as np
-from viewephys.gui import viewephys
-nc, ns, fs = (384, 50000, 30000)  # this mimics one second of neuropixel data
-data = np.random.randn(nc, ns) / 1e6  # volts by default
-ve = viewephys(data, fs=fs)
-
-# We can open multiple windows at once, but they must have different titles
-data2 = data * 50
-ve2 = viewephys(data, fs=fs, title="plot 2")
-
-```
-![alt text](./docs/view_rand_array.png "Ephys viewer")
-
-
-Note if you are running through a script, you need to instantiate
-the Qt application yourself:
-
-#### Opening a binary file through a script
-
-```python
-from viewephys.gui import EphysBinViewer, create_app
-
-app = create_app()
-
-viewer = EphysBinViewer(r"C:\Users\Joe\Desktop\1119617_LSE1_shank12_g0_imec0\1119617_LSE1_shank12_g0_t0.imec0.ap.bin")
-
-app.exec()
-```
-
-#### Load in a numpy array or slice through a script
-
-```python
-
-import numpy as np
-from viewephys.gui import viewephys, create_app
-
-app = create_app()
-
-nc, ns, fs = (384, 50000, 30000)  # this mimics one second of neuropixel data
-data = np.random.randn(nc, ns) / 1e6  # volts by default
-
-ve = viewephys(data, fs=fs)
-ve2 = viewephys(data * 50, fs=fs, title="plot 2")
-
-app.exec()
-
-```
-
-## Contribution
-Fork and PR.
-
-Pypi Release checklist:
 ```shell
-ruff check
-rm -fR dist
-rm -fR .pdm-build
-pdm publish
-#twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+# macOS / Linux
+open docs/_build/html/index.html
+
+# Windows
+start docs/_build/html/index.html
 ```
+
+The built site will be in `docs/_build/html/`. Changes to `.rst` files are
+reflected immediately on the next build — no reinstall needed.

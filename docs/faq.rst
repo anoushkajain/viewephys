@@ -3,34 +3,6 @@ FAQ
 
 ----
 
-Installation
-------------
-
-**viewephys --help is not found after pip install.**
-
-Make sure your virtual environment is activated:
-
-.. code-block:: bash
-
-   conda activate viewephys   # if using conda
-   viewephys --help
-
-   source venv/bin/activate   # if using venv (macOS / Linux)
-   venv\Scripts\activate      # Windows
-   viewephys --help
-
-----
-
-**I get a Qt error on Linux.**
-
-Headless Linux servers do not have a display. Either run viewephys on a
-machine with a display, or set a virtual display first:
-
-.. code-block:: bash
-
-   export DISPLAY=:0
-
-----
 
 Loading data
 ------------
@@ -42,48 +14,24 @@ times until individual channels become visible.
 
 ----
 
-**What file formats does viewephys support?**
+Opening compressed ``.cbin`` files
+------------------------------------
 
-.. list-table::
-   :widths: 20 80
-   :header-rows: 1
+IBL compressed binary files (``.cbin``) require the ``mtscomp`` package to
+decompress on the fly. If you plan to open ``.cbin`` files, install it
+alongside viewephys:
 
-   * - Extension
-     - Description
-   * - ``.bin``
-     - Raw binary Neuropixels recording (SpikeGLX or OpenEphys)
-   * - ``.cbin``
-     - IBL compressed binary format (requires ``mtscomp``)
+.. code-block:: bash
 
-For other formats (NWB, Nix, proprietary acquisition formats), convert
-to binary first using `SpikeInterface <https://spikeinterface.readthedocs.io>`_.
+   pip install mtscomp
 
-----
+.. note::
 
-**I need to specify the number of channels or sampling rate manually.**
-
-Pass them directly via Python:
-
-.. code-block:: python
-
-   import numpy as np
-   from viewephys.gui import viewephys
-
-   data = np.fromfile("recording.bin", dtype=np.int16).reshape(385, -1)
-   data = data[:384, :]           # drop sync channel
-   ve = viewephys(data / 1e6, fs=30_000)   # convert to Volts
+   ``mtscomp`` is not installed automatically with viewephys. If you try to
+   open a ``.cbin`` file without it, you will see an import error. Standard
+   ``.bin`` files do not require ``mtscomp``.
 
 ----
-
-**Can I open OpenEphys recordings?**
-
-viewephys natively supports ``.bin`` and ``.cbin`` files (SpikeGLX format).
-OpenEphys recordings are not directly supported. However, if your OpenEphys
-data is saved as a raw binary ``.dat`` file, you can load it via Python by
-passing the channel count and sampling rate manually. For full format
-conversion support, use
-`SpikeInterface <https://spikeinterface.readthedocs.io>`_ to convert your
-recording to a compatible format first.
 
 
 Interpreting the trace
@@ -110,11 +58,6 @@ Signs of a good recording in density mode:
 For a quantitative assessment, run IBL quality metrics via
 ``brainbox.metrics`` after spike sorting.
 
-----
-
-**What does the channel dropdown (trace / shank / col / row...) mean?**
-
-See the :doc:`interface` guide for a full explanation of each option.
 
 ----
 
@@ -140,3 +83,4 @@ Yes. Add the Qt magic before importing:
 
 No. viewephys is completely standalone and does not require any other
 IBL library. It can be used independently on any Neuropixels recording.
+----

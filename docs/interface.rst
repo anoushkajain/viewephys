@@ -30,7 +30,7 @@ select your file.
      - What it loads
    * - **raw**
      - Unfiltered voltage traces straight from the probe. Includes all frequency
-       content — useful for checking the full signal before any processing.
+       content. Useful for checking the full signal before any processing.
    * - **AP band (high-pass 300Hz)**
      - Action potential band, high-pass filtered at 300 Hz. This removes slow LFP
        fluctuations and leaves spike-frequency activity. **This is the default and
@@ -39,14 +39,10 @@ select your file.
      - Low-frequency / local field potential band, high-pass filtered at 2 Hz.
        Use this to inspect slower oscillations (theta, gamma, ripples).
    * - **AP band Destriped**
-     - The AP band after destriping has been applied (noise band removal via
-       ``ibldsp.voltage.destripe``). Only available if a destriped file exists
-       alongside the raw binary.
+     - The AP band after destriping has been applied in-memory via
+       ``ibldsp.voltage.destripe``. No separate pre-processed file is needed;
+       destriping is computed on-the-fly from the raw data.
 
-.. tip::
-
-   If you are new to the recording, start with **AP band (high-pass 300Hz)**.
-   It gives the clearest view of neural spiking activity.
 
 ----
 
@@ -62,29 +58,10 @@ Use **File → Open** to open the file picker:
 
 |
 
-viewephys accepts the following file types:
-
-.. list-table::
-   :widths: 20 80
-   :header-rows: 1
-
-   * - Extension
-     - Description
-   * - ``.bin``
-     - Raw binary Neuropixels recording (SpikeGLX or OpenEphys format)
-   * - ``.cbin``
-     - IBL compressed binary format (requires ``mtscomp``)
-
-The file picker filters for ``*.bin`` and ``*.cbin`` by default.
-Your recording metadata file (``.meta`` or ``.ch``) should be in the same folder —
-viewephys reads it automatically to determine the number of channels and sampling rate.
-
-.. note::
-
-   If no metadata file is found, viewephys will ask you to provide the channel
-   count and sampling rate manually.
-
-----
+viewephys accepts ``*.bin``, ``*.cbin``, and ``*.dat`` electrophysiology files.
+For Neuropixels recordings, select your ``*ap.bin`` or ``*ap.cbin`` file from SpikeGLX. 
+If your data is in OpenEphys format, select the raw binary ``.dat`` file and 
+provide the channel count and sampling rate manually.
 
 The main trace view
 -------------------
@@ -108,11 +85,14 @@ The trace area shows voltage across all channels (y-axis) over time (x-axis).
 
    * - Control
      - Description
-   * - **Gain value** (number box, top left)
+   * - **dB Gain value** (number box, top left)
      - Current display gain in dB. Edit directly or use ``Ctrl+A`` / ``Ctrl+Z``
        to increase or decrease by 3 dB.
-   * - **Colour box** (below gain)
-     - Click to set a highlight colour for picked spikes.
+   * - **Sort** (below gain)
+     - Type one or more header field names (space-separated) and press ``Enter``
+       to re-order the displayed traces by those values. Multiple keys apply a
+       hierarchical sort (rightmost key has highest priority). Leave blank to keep
+       the original trace order.
    * - **Density** (radio button)
      - Renders signal intensity as pixel brightness. Best for an overview of all
        channels — noise, dead channels, and active regions are immediately visible.
@@ -131,19 +111,61 @@ The three numbers in the bottom-left update as you move the cursor over the trac
    * - Value
      - Meaning
    * - First number
-     - Voltage at cursor position (in Volts)
+     - Time at cursor position (in seconds)
    * - Second number
-     - Signal value in display units
+     - Signal amplitude at cursor position
    * - Third number (bold)
-     - Channel number at cursor position
+     - Value of the selected header field for that channel (e.g. channel index
+       when ``trace`` is selected in the header strip dropdown)
 
 ----
 
-The channel property dropdown
------------------------------
+Mouse and keyboard controls
+---------------------------
 
-The dropdown in the top-left of the trace window controls what property is used
-to **colour or sort** the channels on the y-axis:
+How to navigate the viewer:
+
+.. list-table::
+   :widths: 35 35 30
+   :header-rows: 1
+
+   * - Action
+     - How
+     - Where
+   * - Scroll through time
+     - Mouse wheel or drag horizontally
+     - Ephys Bin viewer
+   * - Switch channels
+     - Scroll vertically around the channel number in the y-axis
+     - butterworth viewer
+   * - Zoom in / out in the trace view around the needed time and channel
+     - Ctrl + scroll
+     - butterworth viewer
+   * - Increase gain
+     - ``Ctrl + A``
+     - butterworth viewer
+   * - Decrease gain
+     - ``Ctrl + Z``
+     - butterworth viewer
+   * - Switch display mode
+     - Menu → **View** → Colormaps
+     - butterworth viewer
+   * - Link multiple windows
+     -  ``Ctrl + P`` (synchronises pan, zoom, and gain)
+     - butterworth viewer
+
+To inspect a specific channel, hover over it —
+the time, signal amplitude, and selected header field value update in real time in the bottom-left status bar.
+
+----
+
+The header strip dropdown
+-------------------------
+
+The dropdown in the top-left of the trace window selects which **header field**
+is plotted in the thin strip alongside the main trace panel. The strip displays
+the numeric value of the chosen field for each channel, giving a visual reference
+of that channel property next to the traces. 
 
 .. image:: _static/gui_channel_dropdown.png
    :alt: Channel property dropdown showing options trace, shank, col, row, flag, x, y, sample_shift, adc, ind
@@ -152,44 +174,18 @@ to **colour or sort** the channels on the y-axis:
 
 |
 
-.. list-table::
-   :widths: 20 80
-   :header-rows: 1
-
-   * - Option
-     - What it shows
-   * - **trace** *(default)*
-     - Raw voltage traces ordered by channel index. This is the standard view
-       for inspecting signal quality.
-   * - **shank**
-     - Channels coloured by which shank they belong to. Useful for multi-shank
-       probes (e.g. Neuropixels 2.0) to distinguish shanks visually.
-   * - **col**
-     - Channels coloured by their column position on the probe. Neuropixels probes
-       have two columns of electrodes; this highlights the column layout.
-   * - **row**
-     - Channels coloured by their row position on the probe (depth along the shank).
-   * - **flag**
-     - Highlights channels that have been flagged (e.g. as bad channels) in the
-       probe geometry file.
-   * - **x**
-     - Channels sorted by their x-coordinate (horizontal position on the probe face).
-   * - **y**
-     - Channels sorted by their y-coordinate (depth from tip). Useful for verifying
-       that channel ordering matches expected anatomy.
-   * - **sample_shift**
-     - Shows the per-channel sample shift applied during ADC multiplexing correction.
-       Relevant when checking time-alignment across channels.
-   * - **adc**
-     - Channels coloured by their ADC (analogue-to-digital converter) index.
-       Useful for diagnosing ADC-specific noise patterns.
-   * - **ind**
-     - Channel index as recorded in the raw file, before any reordering.
+The options in the list are the keys of the header dictionary passed when the
+data was loaded. ``trace`` (channel index 0, 1, 2 …) is always present. When
+Neuropixels probe geometry is supplied, the list also includes fields such as
+``shank``, ``col``, ``row``, ``x``, ``y``, ``sample_shift``, ``adc``, and
+``ind`` — but the exact options depend entirely on what header data was provided.
 
 .. tip::
 
-   For most users, **trace** is the only option you need. The others are useful
-   for hardware diagnostics and for verifying probe geometry.
+   How to use this view: you notice something odd at channel 150 and want to know where it 
+   sits on the probe. Select y from the dropdown, hover over that channel, and the status bar 
+   shows its depth. Or select shank to instantly see the shank boundary in the strip and confirm 
+   the channel is on shank 2.
 
 ----
 
@@ -231,7 +227,7 @@ Changes the colour palette used in density mode:
 The Pick menu
 -------------
 
-Access via **Pick** in the menu bar:
+Enable pick mode via **Pick → Pick** in the menu bar.
 
 .. image:: _static/gui_pick_menu.png
    :alt: Pick menu showing Pick and Label channels options
@@ -239,6 +235,7 @@ Access via **Pick** in the menu bar:
    :width: 95%
 
 |
+
 
 .. list-table::
    :widths: 25 75
@@ -248,11 +245,47 @@ Access via **Pick** in the menu bar:
      - Description
    * - **Pick**
      - Enables manual spike picking mode. Left-click on the trace to mark a
-       spike event. Shift+click to remove a mark. Space to increment the spike
-       group number. See :doc:`controls` for the full reference.
+       spike event. Shift+click to remove a nearby mark. Right-click or press
+       ``Space`` to increment the spike group number. 
    * - **Label channels**
-     - Enables channel labelling mode. Click on a channel to assign it a label
-       (e.g. marking it as a bad channel or a channel of interest).
+     - Toggle menu item. Not yet implemented — checking it has no effect.
+
+----
+
+
+Multi-window mode
+-----------------
+
+Open multiple viewephys windows (e.g. raw vs destriped) and press
+``Ctrl + P`` to link them. Panning, zooming, and gain changes then
+synchronise across all linked windows.
+
+.. code-block:: python
+
+   from viewephys.gui import viewephys
+   import numpy as np
+
+   # Two windows linked for comparison
+   raw   = np.random.randn(384, 30_000) / 1e6
+   clean = raw * 0.5  # simulated destriped data
+
+   w = {}
+   w['raw']   = viewephys(raw,   fs=30_000, title='raw')
+   w['clean'] = viewephys(clean, fs=30_000, title='destriped')
+   # Press Ctrl+P in either window to link them
+
+----
+
+Jump to a time point
+--------------------
+
+At the bottom of the viewer, the **Jump to** field lets you navigate
+directly to a specific time:
+
+1. Enter a time in **seconds** in the text box
+2. Click **Go**
+
+The trace view jumps to that position immediately.
 
 ----
 
@@ -327,8 +360,7 @@ have a unique ``title``:
    ve2 = viewephys(clean, fs=fs, title="destriped")
 
 To synchronise pan, zoom, and gain across windows, press ``Ctrl + P``
-in either window after both are open. See :doc:`controls` for the full
-keyboard reference.
+in either window after both are open.
 
 .. tip::
 

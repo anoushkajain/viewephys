@@ -11,11 +11,11 @@ Requirements
    * - Requirement
      - Version / notes
    * - Python
-     - 3.8 or higher (3.12 recommended)
+     - 3.10 or higher (3.12 recommended)
    * - Operating system
      - Linux, macOS, Windows
    * - Qt backend
-     - Installed automatically via PyPI
+     - installed automatically
 
 Option 1 — Install from PyPI (recommended)
 -------------------------------------------
@@ -37,15 +37,23 @@ Using a virtual environment keeps viewephys isolated from your system Python.
 
 .. code-block:: bash
 
-   python -m venv venv
+   python3.12 -m venv venv
    source venv/bin/activate        # macOS / Linux
    venv\Scripts\activate           # Windows
+
+.. note::
+
+   If you do not have Python 3.12, replace ``python3.12`` with your installed
+   version (e.g. ``python3.10``). Python 3.10 or higher is required.
+   To check your version run ``python3 --version``.
 
 **Step 2 — Install viewephys**
 
 .. code-block:: bash
 
    pip install viewephys
+
+
 
 **Step 3 — Verify the installation**
 
@@ -54,6 +62,13 @@ Using a virtual environment keeps viewephys isolated from your system Python.
    viewephys --help
 
 You should see available commands and options printed to the terminal.
+
+.. tip::
+
+   **Windows path issues**
+
+   If ``viewephys --help`` is not found after installation, ensure your virtual
+   environment is activated and that ``Scripts/`` is on your PATH.
 
 Option 2 — Install from source (development)
 ---------------------------------------------
@@ -81,28 +96,4 @@ viewephys is compatible and can be installed into it directly:
    conda activate iblenv
    pip install viewephys
 
-Troubleshooting
----------------
 
-.. warning::
-
-   **Qt errors on Linux**
-
-   On headless Linux servers, the Qt GUI backend may fail. Run viewephys on a
-   machine with a display, or use a virtual display::
-
-      export DISPLAY=:0
-
-.. note::
-
-   **Older Python versions**
-
-   Python 3.8–3.11 are supported but 3.12 is recommended. If you see dependency
-   conflicts, create a fresh environment with Python 3.12.
-
-.. tip::
-
-   **Windows path issues**
-
-   If ``viewephys --help`` is not found after installation, ensure your virtual
-   environment is activated and that ``Scripts/`` is on your PATH.

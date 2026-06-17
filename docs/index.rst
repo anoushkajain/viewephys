@@ -3,66 +3,61 @@ viewephys
 
 **viewephys** is a lightweight Python tool developed by the
 `International Brain Laboratory (IBL) <https://www.internationalbrainlab.com/>`_
-to visualize raw electrophysiology data.
+to visualize raw Neuropixel electrophysiology data.
 
-It is built for speed and simplicity: open a Neuropixels recording, scroll through
-channels and time, and get immediate visual feedback, without running a full analysis
-pipeline first.
+It is built for speed and simplicity: open a recording and get
+immediate visual feedback, without running a full analysis pipeline first.
 
 It is designed to help users:
 
-- Inspect neural signals quickly without writing any analysis code
 - Explore raw voltage traces across all recording channels simultaneously
 - Compare data at different stages of preprocessing side by side
-- Identify noise, artifacts, or signal patterns interactively
-
-The tool focuses on **fast, interactive visualization** rather than heavy data
-processing or analysis.
+- Spot noise, artefacts, or signal patterns before committing to deeper analysis
 
 Who is it for?
 --------------
 
-viewephys is intended for:
-
-- Neuroscientists working with electrophysiology data
-- Data analysts and engineers handling neural recordings
-- Anyone who wants a quick way to inspect raw data before deeper analysis
+- Neuroscientists and data engineers working with electrophysiology recordings
+- Anyone who wants to inspect raw data before committing to a full analysis
 
 We assume users:
 
-- have a raw electrophysiology file (.bin, .cbin, or a NumPy array) ready to view
 - have basic familiarity with Python
 - are comfortable using the command line
 - may be new to the IBL ecosystem, no prior IBL experience required
 
-What problems does it solve?
------------------------------
+Why does this matter?
+----------------------
 
-Raw electrophysiology files are large often tens of gigabytes (hundreds of channels, tens of
-thousands of samples per second) , binary, and not human-readable. Most analysis tools require 
-significant setup before you can see anything.
+Raw electrophysiology files are large — often tens of gigabytes, with hundreds
+of channels sampled tens of thousands of times per second — binary, and not
+human-readable on their own. Most analysis tools require significant setup
+before you can see anything at all.
 
-
-viewephys provides:
+viewephys removes that barrier:
 
 .. list-table::
    :widths: 45 55
    :header-rows: 1
 
-   * - Problem
-     - viewephys solution
-   * - Large binary files are hard to inspect
-     - Opens files without loading everything into memory
-   * - Noise and artefacts are hard to spot
-     - Density and wiggle display modes make signal quality immediately visible
-   * - Setting up analysis pipelines is slow
-     - Viewer launches in seconds with a single command
-   * - Multi-channel data is hard to navigate
-     - Scroll through all channels and time interactively
+   * - Without viewephys
+     - With viewephys
+   * - Loading a file means loading it entirely into memory
+     - Files open without loading everything into memory
+   * - A full pipeline must be configured before you see anything
+     - The viewer launches in seconds with a single command
+   * - Scrolling through hundreds of channels by hand is tedious
+     - Channels and time are navigable interactively, with different display modes
 
+What data formats does it support?
+------------------------------------
+
+viewephys accepts ``*.bin``, ``*.cbin``, and ``*.dat`` electrophysiology files.
+It can also display any NumPy array directly, making it easy to use within
+a Python session or script.
 
 When to use viewephys?
----------------------
+-----------------------
 
 .. list-table::
    :widths: 30 70
@@ -78,17 +73,8 @@ When to use viewephys?
      - Identify where in time or channels a problem occurs
 
 .. note::
+
    viewephys does not sort spikes, compute metrics, or modify your data.
-
-
-What data formats does it support?
-------------------------------------
-
-viewephys reads binary files produced by
-`SpikeGLX <https://billkarsh.github.io/SpikeGLX/>`_ (``.bin`` and ``.cbin``),
-which is one of the standard acquisition software for Neuropixels probes.
-It can also display any NumPy array directly, making it easy to use within
-a Python session or script.
 
 .. toctree::
    :maxdepth: 1
@@ -97,7 +83,6 @@ a Python session or script.
    installation
    quickstart
    interface
-   control
    faq
    community
    release_notes

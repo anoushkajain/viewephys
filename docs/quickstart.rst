@@ -1,19 +1,16 @@
 Quickstart
 ==========
 
-viewephys is designed to be intuitive and easy to use. This quickstart guide walks you 
-through the basics of opening a recording and navigating the viewer.
+This quickstart guide walks you through the basics of opening a recording and navigating the viewer.
 
 ----
 
 Step 1 — Prepare your data
 --------------------------
 
-viewephys works with electrophysiology data files (e.g. binary recordings
-such as ``.bin`` files). Make sure you have:
+Make sure you have:
 
-- A valid data file (``.bin`` or ``.cbin``)
-- Knowledge of its sampling rate and channel structure ( you can usually find this in the metadata file, e.g. ``.meta`` or ``.ch``)
+- A data file in one of the formats below
 
 .. list-table::
    :widths: 20 80
@@ -22,16 +19,40 @@ such as ``.bin`` files). Make sure you have:
    * - Extension
      - Description
    * - ``.bin``
-     - Raw binary Neuropixels recording (SpikeGLX format)
+     - Raw binary recording 
    * - ``.cbin``
      - IBL compressed binary format (requires ``mtscomp``)
+   * - ``.dat``
+     - OpenEphys raw binary format (requires manual metadata input)
+
+- Knowledge of its sampling rate and channel count, usually available in an
+  accompanying metadata file (``.meta`` or ``.ch``)
+
+viewephys reads the metadata file (``.meta`` or ``.ch``) automatically
+if it is in the same folder as your data file.
+
+If no metadata file is found, you can load your data manually from Python:
+
+.. code-block:: python
+
+   import numpy as np
+   from viewephys.gui import viewephys
+
+   data = np.fromfile("recording.dat", dtype=np.int16).reshape(385, -1)
+   data = data[:384, :]           # drop sync channel
+   ve = viewephys(data / 1e6, fs=30_000)   # convert to Volts
+
+Don't have a recording to hand? Download `this test dataset
+<https://drive.google.com/drive/folders/1k2yyHH0XBNG8y4BgSm7R7tFD4SfA-QTs?usp=drive_link>`_
+to see what a real recording and its metadata file look like.
+
+For other formats (NWB, Nix, proprietary acquisition formats), convert
+to binary first using `SpikeInterface <https://spikeinterface.readthedocs.io>`_.
 
 .. note::
 
-   viewephys reads the metadata file (``.meta`` or ``.ch``) automatically
-   if it is in the same folder as your data file. If no metadata file is
-   found, you will be asked to provide the channel count and sampling rate
-   manually. Questions regarding OpenEphys format support? See the :doc:`faq` for details.
+   Need to decompress ``.cbin`` files with
+   ``mtscomp``? See the :doc:`faq` for details.
 
 ----
 
@@ -39,8 +60,6 @@ Step 2 — Launch the viewer
 --------------------------
 
 **From the command line**
-
-The simplest way to start:
 
 .. code-block:: bash
 
@@ -57,52 +76,44 @@ The viewer opens immediately.
       viewephys
 
 2. From the menu bar, choose **File → Open**
-3. Navigate to your ``.bin`` or ``.cbin`` file and select it
+3. Navigate to your raw file and select it
 
-----
 
-Step 3 — Load from Python (optional)
---------------------------------------
+**Load from Python script**
 
-You can also use viewephys within a Python session — useful for testing
-or integrating the viewer into an existing analysis script:
+If you are running through a script, you need to instantiate the Qt application yourself
+
+.. code-block:: python
+
+   from viewephys.gui import EphysBinViewer, create_app
+
+   app = create_app()
+
+   viewer = EphysBinViewer(r"C:\Data\recording_g0_t0.imec0.ap.bin")
+
+   app.exec()
+
+You can also load a NumPy array directly from a script:
 
 .. code-block:: python
 
    import numpy as np
-   from viewephys.gui import viewephys
+   from viewephys.gui import viewephys, create_app
 
-   # Simulate one second of Neuropixels data (384 channels, 30 kHz)
-   nc, ns, fs = 384, 50_000, 30_000
-   data = np.random.randn(nc, ns) / 1e6  # data in Volts
+   app = create_app()
+
+   nc, ns, fs = (384, 50000, 30000)  # one second of Neuropixels data
+   data = np.random.randn(nc, ns) / 1e6  # values in Volts
 
    ve = viewephys(data, fs=fs)
+   ve2 = viewephys(data * 50, fs=fs, title="plot 2")
 
-.. note::
+   app.exec()
 
-   **IPython / Jupyter users**
-
-   Add the Qt event loop magic before importing::
-
-      %gui qt
-
-**Opening multiple windows**
-
-viewephys supports multiple instances simultaneously.
-Each window must have a unique title:
-
-.. code-block:: python
-
-   data2 = data * 50
-   ve2 = viewephys(data2, fs=fs, title="plot 2")
-
-This is useful for comparing two versions of the same recording side by
-side — for example, raw vs destriped data. See :doc:`interface` for how
-to link windows and run viewephys from a script.
 
 ----
 
-Step 4 — Explore the interface
+Step 3 — Explore the interface
 -------------------------------
 
 Once the viewer opens, you will see a density-mode display:
@@ -121,41 +132,15 @@ Once the viewer opens, you will see a density-mode display:
 
 - **Dark regions** — low activity or background noise
 - **Light regions** — signal events (spikes, LFP deflections)
-- **Vertical dark band** — electrical artefact (noise band)
-- **Status bar** (bottom left) — updates as you hover: voltage, signal
-  value, and channel number
+- **Vertical bright band** — electrical artefact (noise band affecting all channels simultaneously)
+- **Status bar** (bottom left) — updates as you hover: time, signal
+  amplitude, and selected header field value
 
-**Navigating the viewer**
-
-.. list-table::
-   :widths: 45 55
-   :header-rows: 1
-
-   * - Action
-     - How
-   * - Scroll through time
-     - Mouse wheel or drag
-   * - Switch channels
-     - Scroll vertically
-   * - Zoom in / out
-     - Ctrl + scroll
-   * - Increase gain
-     - ``Ctrl + A``
-   * - Decrease gain
-     - ``Ctrl + Z``
-   * - Switch display mode
-     - Menu → **View** → Density / Wiggle
-   * - Link multiple windows
-     - ``Ctrl + P`` (multi-window mode)
-
-To inspect a specific channel, hover over it — the channel number and
-voltage update in real time in the bottom-left status bar. See the
-:doc:`interface` guide for a full explanation of every control and menu
-option.
+See the :doc:`interface` guide for a full explanation.
 
 ----
 
-Step 5 — Your first quality check
+Step 4 — Your first quality check
 -----------------------------------
 
 Follow this sequence when opening a new recording for the first time:
@@ -170,12 +155,12 @@ individual channels become visible.
 
 Look for bright vertical stripes spanning all channels simultaneously.
 These are electrical artefacts (often 50 or 60 Hz line noise), not neural
-signal. Note their position in time — you will want to remove them with
-``ibldsp.voltage.destripe()`` before sorting.
+signal. Note their position in time: 
+you will want to remove them with ``ibldsp.voltage.destripe()`` before sorting.
 
 **3. Find a clean region**
 
-Scroll to a region where channels show clear contrast — dark background
+Scroll to a region where channels show clear contrast: dark background
 with bright deflections on a few channels. This indicates good
 signal-to-noise ratio (SNR).
 
@@ -194,7 +179,6 @@ Now that you can open and navigate a recording:
 
 - Read the :doc:`interface` guide for a full explanation of every control
   and menu option
-- Read the :doc:`controls` reference for all keyboard shortcuts
 - See the :doc:`faq` for common issues
 - Explore the `IBL documentation hub <https://docs.internationalbrainlab.org>`_
   for the next steps in the pipeline (destriping, spike sorting, quality
