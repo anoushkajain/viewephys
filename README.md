@@ -46,7 +46,7 @@ For the full interface reference see the [interface guide](https://anoushkajain.
 ## Documentation
 
 The full hosted documentation is at **https://anoushkajain.github.io/viewephys/index.html**
-and covers installation, the quickstart guide, the full interface reference, and the FAQ.
+and covers installation, quickstart guide, full interface reference, and FAQ.
 
 ### Documentation source
 
