@@ -270,7 +270,7 @@ in either window after both are open.
 
    use ``Ctrl + P`` to lock them together.
 
-   ----
+----
 
 Try it yourself
 ---------------

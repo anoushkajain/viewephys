@@ -104,3 +104,20 @@ start docs/_build/html/index.html
 
 The built site will be in `docs/_build/html/`. Changes to `.rst` files are
 reflected immediately on the next build — no reinstall needed.
+
+### Run the docs chatbot locally
+
+A chat widget is embedded in every docs page. It requires a small backend to
+call the Claude API. To run it:
+
+```shell
+pip install -r chatbot/requirements.txt
+ANTHROPIC_API_KEY=sk-...  uvicorn chatbot.app:app --reload   # macOS / Linux
+$env:ANTHROPIC_API_KEY="sk-..."                               # Windows (PowerShell)
+uvicorn chatbot.app:app --reload
+```
+
+Then rebuild the docs (`sphinx-build -b html docs docs/_build/html`) and open
+`docs/_build/html/index.html`. The chat button appears in the bottom-right
+corner of every page. If the backend is not running, the widget shows a
+friendly error message.

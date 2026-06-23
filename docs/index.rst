@@ -18,7 +18,7 @@ Who is it for?
 --------------
 
 - Neuroscientists and data engineers working with electrophysiology recordings
-- Anyone who wants to inspect raw data before committing to a full analysis
+- Anyone who wants to inspect raw data
 
 We assume users:
 

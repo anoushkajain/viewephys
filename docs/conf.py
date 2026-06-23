@@ -22,3 +22,6 @@ html_theme_options = {
     "source_directory": "docs/",
 }
 
+html_css_files = ["chatbot.css"]
+html_js_files = ["chatbot.js"]
+
