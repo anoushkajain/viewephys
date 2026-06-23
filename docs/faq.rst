@@ -11,7 +11,7 @@ times until individual channels become visible.
 
 **How do I use compressed** ``.cbin`` **files?**
 
-To use ``.cbin`` **files, IBL compressed binary files (``.cbin``) you would require the ``mtscomp`` package to
+To use ``.cbin`` files, IBL compressed binary files (``.cbin``), you would require the ``mtscomp`` package to
 decompress first. Then you will have a regular binary file. Install it alongside viewephys:
 
 .. code-block:: bash
