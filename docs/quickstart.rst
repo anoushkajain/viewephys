@@ -25,8 +25,8 @@ Make sure you have:
 
 .. note::
 
-  If you have ``.cbin``, IBL compressed binary format. You can use ``.cbin`` files with
-   ``mtscomp``? See the :doc:`faq` for details.
+  If you have ``.cbin`` (IBL compressed binary format), you can use ``.cbin`` files 
+  after decompressing with ``mtscomp``. See the :doc:`faq` for details.
 
 ----
 
@@ -40,15 +40,15 @@ If no metadata file is found, you can load your data manually from Python:
 
 .. code-block:: python
 
-   import numpy as np
-   from viewephys.gui import viewephys
+  import numpy as np
+  from viewephys.gui import viewephys
 
-   data = np.fromfile("recording.dat", dtype=np.int16).reshape(-1, 385).T
-   data = data[:384, :]  # drop sync channel
-   # Replace 1e6 with the gain factor from your .meta file (e.g. 2.34e-6 for NP1.0 AP, gain 500).
-   # Using 1e6 here is a rough approximation — y-axis values will not be calibrated µV.
-   ve = viewephys(data / 1e6, fs=30_000)
+  data = np.fromfile("recording.dat", dtype=np.int16).reshape(-1, 385).T
+  data = data[:384, :]  # drop sync channel
 
+  # Convert int16 ADC counts to Volts. For NP1.0 AP band at gain 500,
+  # 1 bit = 2.34 µV (see your .meta file for the exact gain used).
+  ve = viewephys(data * 2.34e-6, fs=30_000)
 
 
 Don't have a recording to hand? Download the
