@@ -58,7 +58,7 @@ relevant documentation page. Do not invent details not found in the docs.
 
 class ChatRequest(BaseModel):
     question: str
-    history: list[dict[str, str]] = []  # [{"role": "user"/"assistant", "content": "..."}]
+    history: list[dict[str, str]] = []
 
 
 @app.get("/health")
@@ -71,7 +71,9 @@ def ask(body: ChatRequest) -> dict[str, str]:
     try:
         client = anthropic.Anthropic()
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Anthropic client error: {exc}") from exc
+        raise HTTPException(
+            status_code=500, detail=f"Anthropic client error: {exc}"
+        ) from exc
 
     # Build message list: previous turns + current question
     messages = list(body.history) + [{"role": "user", "content": body.question}]
@@ -84,7 +86,9 @@ def ask(body: ChatRequest) -> dict[str, str]:
             messages=messages,
         )
     except anthropic.AuthenticationError as exc:
-        raise HTTPException(status_code=401, detail="Invalid ANTHROPIC_API_KEY") from exc
+        raise HTTPException(
+            status_code=401, detail="Invalid ANTHROPIC_API_KEY"
+        ) from exc
     except Exception as exc:
         import traceback
         traceback.print_exc()
