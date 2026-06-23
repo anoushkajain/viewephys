@@ -12,6 +12,22 @@ extensions = [
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
+autodoc_mock_imports = [
+    "qtpy",
+    "PyQt5",
+    "PyQt6",
+    "PySide2",
+    "PySide6",
+    "pyqtgraph",
+    "spikeglx",
+    "ibldsp",
+    "iblutil",
+    "neuropixel",
+    "brainbox",
+    "iblatlas",
+    "one",
+]
+
 html_theme = "furo"
 html_static_path = ["_static"]
 html_title = "viewephys"
