@@ -52,7 +52,7 @@ viewephys removes that barrier:
 What data formats does it support?
 ------------------------------------
 
-viewephys accepts ``*.bin``, ``*.cbin``, and ``*.dat`` electrophysiology files.
+viewephys accepts ``*.bin`` and ``*.dat`` electrophysiology files.
 It can also display any NumPy array directly, making it easy to use within
 a Python session or script.
 

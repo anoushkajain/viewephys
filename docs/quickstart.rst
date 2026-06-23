@@ -20,15 +20,20 @@ Make sure you have:
      - Description
    * - ``.bin``
      - Raw binary recording 
-   * - ``.cbin``
-     - IBL compressed binary format (requires ``mtscomp``)
    * - ``.dat``
      - OpenEphys raw binary format (requires manual metadata input)
 
-- Knowledge of its sampling rate and channel count, usually available in an
-  accompanying metadata file (``.meta`` or ``.ch``)
+.. note::
 
-viewephys reads the metadata file (``.meta`` or ``.ch``) automatically
+  If you have ``.cbin``, IBL compressed binary format. You can use ``.cbin`` files with
+   ``mtscomp``? See the :doc:`faq` for details.
+
+----
+
+- Knowledge of its sampling rate and channel count, usually available in an
+  accompanying metadata file (``.meta``)
+
+viewephys reads the metadata file (``.meta`` ) automatically
 if it is in the same folder as your data file.
 
 If no metadata file is found, you can load your data manually from Python:
@@ -38,9 +43,12 @@ If no metadata file is found, you can load your data manually from Python:
    import numpy as np
    from viewephys.gui import viewephys
 
-   data = np.fromfile("recording.dat", dtype=np.int16).reshape(385, -1)
-   data = data[:384, :]           # drop sync channel
-   ve = viewephys(data / 1e6, fs=30_000)   # convert to Volts
+   data = np.fromfile("recording.dat", dtype=np.int16).reshape(-1, 385).T
+   data = data[:384, :]  # drop sync channel
+   # Replace 1e6 with the gain factor from your .meta file (e.g. 2.34e-6 for NP1.0 AP, gain 500).
+   # Using 1e6 here is a rough approximation — y-axis values will not be calibrated µV.
+   ve = viewephys(data / 1e6, fs=30_000)
+
 
 
 Don't have a recording to hand? Download the
@@ -52,12 +60,7 @@ A noisy example is also available on the :doc:`interface` page under
 For other formats (NWB, Nix, proprietary acquisition formats), convert
 to binary first using `SpikeInterface <https://spikeinterface.readthedocs.io>`_.
 
-.. note::
 
-   Need to decompress ``.cbin`` files with
-   ``mtscomp``? See the :doc:`faq` for details.
-
-----
 
 Step 2 — Launch the viewer
 --------------------------
