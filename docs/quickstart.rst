@@ -33,23 +33,6 @@ Make sure you have:
 - Knowledge of its sampling rate and channel count, usually available in an
   accompanying metadata file (``.meta``)
 
-viewephys reads the metadata file (``.meta`` ) automatically
-if it is in the same folder as your data file.
-
-If no metadata file is found, you can load your data manually from Python:
-
-.. code-block:: python
-
-  import numpy as np
-  from viewephys.gui import viewephys
-
-  data = np.fromfile("recording.dat", dtype=np.int16).reshape(-1, 385).T
-  data = data[:384, :]  # drop sync channel
-
-  # Convert int16 ADC counts to Volts. For NP1.0 AP band at gain 500,
-  # 1 bit = 2.34 µV (see your .meta file for the exact gain used).
-  ve = viewephys(data * 2.34e-6, fs=30_000)
-
 
 Don't have a recording to hand? Download the
 `sample good_recording dataset <https://drive.google.com/drive/folders/1IXXsAL1kRAvlOKQdXgu5i7n1YW2vSehA?usp=drive_link>`_
@@ -118,42 +101,7 @@ You can also load a NumPy array directly from a script:
 
 **viewephys() parameters**
 
-.. list-table::
-   :widths: 20 15 65
-   :header-rows: 1
-
-   * - Parameter
-     - Default
-     - Description
-   * - ``data``
-     - required
-     - NumPy array of shape ``(n_channels, n_samples)``, values in **Volts**.
-       Divide raw ``int16`` samples by ``1e6`` before passing.
-   * - ``fs``
-     - required
-     - Sampling rate in Hz (e.g. ``30_000`` for Neuropixels AP band,
-       ``2_500`` for LFP band).
-   * - ``channels``
-     - ``None``
-     - Dictionary of trace header fields, one entry per channel (e.g.
-       ``{"x": ..., "y": ..., "atlas_id": ...}``). When ``None``, a default
-       Neuropixels 1.0 layout is used. Provides the values shown in the
-       status bar and the left-hand channel strip.
-   * - ``title``
-     - ``"ephys"``
-     - Window title string. Open two windows with different titles to enable
-       **Ctrl+P** time-linked scrolling between them.
-   * - ``t0``
-     - ``0.0``
-     - Time offset in seconds applied to the horizontal axis. Set this to the
-       absolute timestamp of the first sample when working with a subset of a
-       longer recording.
-   * - ``colormap``
-     - ``None``
-     - Colormap for the density display. Accepts a string name (e.g.
-       ``"PuOr"`` from matplotlib or colorcet) or a colormap object.
-       The default diverging colormap highlights both positive and negative
-       deflections.
+.. autofunction:: viewephys.gui.viewephys
 
 ----
 

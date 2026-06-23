@@ -268,7 +268,8 @@ in either window after both are open.
 
 .. tip::
 
-   use ``Ctrl + P`` to lock them together.
+   You can use this examples\from_array.py script to see how the output of 
+   different SpikeInterface preprocessing steps looks in viewephys.
 
 ----
 

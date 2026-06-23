@@ -587,15 +587,30 @@ def viewephys(
     a_scalar: float = A_SCALAR,
     colormap: str | pg.ColorMap | matplotlib.colors.Colormap | None = None,
 ) -> EphysViewer:
-    """
-    Create an EphysViewer window to display an array of data.
-    :param data: [nc, ns]
-    :param fs:
-    :param channels: dictionary of trace headers (nc, ) or dataframe (nc, ncolumns)
-    :param br:
-    :param title:
-    :param colormap: non-standard colormap from colorcet or matplotlib such as "PuOr"
-    :return:
+    """Create an EphysViewer window to display an array of data.
+
+    Args:
+        data: NumPy array of shape ``(n_channels, n_samples)``, values in Volts.
+            Divide raw ``int16`` samples by the gain factor from your ``.meta`` file
+            (e.g. ``2.34e-6`` for Neuropixels 1.0 AP band at gain 500).
+        fs: Sampling rate in Hz (e.g. ``30_000`` for Neuropixels AP band,
+            ``2_500`` for LFP band).
+        channels: Dictionary of trace header fields, one entry per channel
+            (e.g. ``{"x": ..., "y": ..., "atlas_id": ...}``). When ``None``,
+            a default Neuropixels 1.0 layout is used. Provides the values shown
+            in the status bar and the left-hand channel strip.
+        title: Window title string. Open two windows with different titles to
+            enable ``Ctrl+P`` time-linked scrolling between them.
+        t0: Time offset in seconds applied to the horizontal axis. Set this to
+            the absolute timestamp of the first sample when working with a
+            subset of a longer recording.
+        colormap: Colormap for the density display. Accepts a string name
+            (e.g. ``"PuOr"`` from matplotlib or colorcet) or a colormap object.
+            The default diverging colormap highlights both positive and negative
+            deflections.
+
+    Returns:
+        EphysViewer window instance.
     """
 
     create_app()
